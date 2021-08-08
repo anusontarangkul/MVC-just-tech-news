@@ -64,6 +64,53 @@ npm test
 
 ## Code Highlights
 
+Create post route for users to login. A query is made to find the email. There is a validator to check if that user exists. Next, a validate is used to check the password. A session is used to let the user stay logged in.
+
+```JavaScript
+router.post('/login', (req, res) => {
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    }).then(dbUserData => {
+        if (!dbUserData) {
+            res.status(400).json({ message: 'No user with that email address.' });
+            return;
+        }
+        const validPassword = dbUserData.checkPassword(req.body.password);
+
+        if (!validPassword) {
+            res.status(400).json({ message: 'Incorrect password!' });
+            return;
+        }
+        req.session.save(() => {
+            req.session.user_id = dbUserData.id;
+            req.session.username = dbUserData.username;
+            req.session.loggedIn = true;
+
+            res.json({ user: dbUserData, message: 'You are now logged in!' });
+        });
+    });
+});
+```
+
+Create a partials for handlebars using `this` and looping through it to provide the comment information.
+
+```handlebars
+<div class="comments">
+    {{#each this}}
+    <section class="comment">
+        <div class="meta">
+            {{user.username}} on {{format_date created_at}}
+        </div>
+        <div class="text">
+            {{comment_text}}
+        </div>
+    </section>
+    {{/each}}
+</div>
+```
+
 ## Technologies
 
 ### Backend Language
