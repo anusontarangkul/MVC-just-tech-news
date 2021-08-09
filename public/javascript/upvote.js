@@ -9,7 +9,7 @@ async function upvoteClickHander(event) {
             post_id: id
         }),
         headers: {
-            'Content-TYpe': 'application/json'
+            'Content-Type': 'application/json'
         }
     });
     if (response.ok) {
